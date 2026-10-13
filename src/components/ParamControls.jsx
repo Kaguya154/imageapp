@@ -15,7 +15,10 @@ export default function ParamControls({ kind, protocol, params, onChange }) {
       {sizes && (
         <label className="field inline">
           <span>尺寸</span>
-          <select value={params.size || 'auto'} onChange={(e) => onChange('size', e.target.value)}>
+          <select
+            value={params.size || kind.defaultSize || 'auto'}
+            onChange={(e) => onChange('size', e.target.value)}
+          >
             {sizes.map((s) => (
               <option key={s} value={s}>{s}</option>
             ))}
@@ -75,6 +78,32 @@ export default function ParamControls({ kind, protocol, params, onChange }) {
             <option value="minimal">minimal</option>
             <option value="high">high</option>
           </select>
+        </label>
+      )}
+
+      {kind.seed && (
+        <label className="field inline">
+          <span>种子</span>
+          <input
+            type="number"
+            min="0"
+            step="1"
+            placeholder="随机"
+            style={{ width: '5.5em' }}
+            value={params.seed ?? ''}
+            onChange={(e) => onChange('seed', e.target.value === '' ? undefined : Number(e.target.value))}
+          />
+        </label>
+      )}
+
+      {kind.watermark && (
+        <label className="field inline check">
+          <input
+            type="checkbox"
+            checked={params.watermark === true}
+            onChange={(e) => onChange('watermark', e.target.checked)}
+          />
+          <span>添加水印</span>
         </label>
       )}
 

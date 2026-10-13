@@ -10,8 +10,9 @@
 - 模型（依据官方文档）：
   - OpenAI：GPT-Image-2、GPT-Image-2.5-Flare、GPT-Image-2.5-Sunburst
   - Google：Gemini-2.5-Flash-Image、Gemini-3.0-Pro-Image、Gemini-3.1-Flash-Image、Gemini-3.1-Flash-Lite-Image
+  - ByteDance：Doubao-Seedream-5.0-Pro、Doubao-Seedream-5.0-Flash（火山协议，同接口支持参考图编辑）
   - Kling：Kling-Image-O1
-- 双协议支持：OpenAI Images / Chat Completions（同步）与 FAL 队列（异步轮询）
+- 多协议支持：OpenAI Images / Chat Completions / 火山协议（同步）与 FAL 队列（异步轮询）
 - 拖拽 / 粘贴上传参考图，结果下载、一键复用为参考图
 - 历史记录本地持久化（localStorage，上限 24 条，自动压缩存储）
 
@@ -40,3 +41,4 @@ npm run build   # 构建到 dist/
 | OpenAI Images | `POST /v1/images/generations`、`POST /v1/images/edits` | `Authorization: Bearer <key>` |
 | Chat Completions | `POST /v1/chat/completions`（Gemini 生图，图片位于 `message.images`） | 同上 |
 | FAL 队列 | `POST /queue/.../` → `GET .../requests/{id}/status`（202 轮询）→ `GET .../requests/{id}` | 同上（也接受 `Key <key>`） |
+| 火山协议 | `POST /volcengine/v3/images/generations`（Seedream，`image` 传参考图数组） | 同上 |

@@ -45,6 +45,10 @@ function buildParams(modelDef, protocol, p) {
       if (not(p.resolution, '', 'auto')) out.resolution = p.resolution
       if (p.num_images > 1) out.num_images = Math.min(p.num_images, k.maxN || 9)
     }
+  } else if (protocol === 'volcengine') {
+    out.size = not(p.size, '', 'auto') ? p.size : k.defaultSize || '2K'
+    if (Number.isFinite(p.seed)) out.seed = p.seed
+    out.watermark = p.watermark === true
   }
   return out
 }
@@ -260,7 +264,7 @@ export default function App() {
           <label className="field">
             <span className="label">模型</span>
             <select value={modelId} onChange={(e) => setModelId(e.target.value)}>
-              {['OpenAI', 'Google', 'Kling'].map((prov) => (
+              {['OpenAI', 'Google', 'ByteDance', 'Kling'].map((prov) => (
                 <optgroup key={prov} label={prov}>
                   {MODELS.filter((m) => m.provider === prov).map((m) => (
                     <option key={m.id} value={m.id}>
@@ -305,7 +309,7 @@ export default function App() {
             />
           </label>
 
-          {(needsRefImages || protocol === 'openai-images' || protocol === 'chat') && (
+          {(needsRefImages || protocol === 'openai-images' || protocol === 'chat' || protocol === 'volcengine') && (
             <ImageDropzone
               images={refImages}
               max={kind.maxRefs || 8}

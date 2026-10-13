@@ -2,6 +2,7 @@
 // https://docs.modelink.ai/api/image-openai-gpt-image-2  (OpenAI 兼容)
 // https://docs.modelink.ai/api/image-fal-*               (FAL 异步队列)
 // https://docs.modelink.ai/api/image-openai-gemini-chat  (Chat Completions 生图)
+// https://docs.modelink.ai/api/image-volcengine          (火山格式同步生图, Seedream)
 
 export const DEFAULT_BASE_URL = 'https://api.qnaigc.com'
 
@@ -11,12 +12,14 @@ const ASPECT_KLING = ['auto', '16:9', '9:16', '1:1', '4:3', '3:4', '3:2', '2:3',
 
 const GPT_SIZES = ['auto', '1024x1024', '1536x1024', '1024x1536', '2048x2048', '2048x1152', '3840x2160', '2160x3840']
 const FAL_IMAGE_SIZES = ['auto', 'square_hd', 'square', 'landscape_4_3', 'landscape_16_9', 'portrait_4_3', 'portrait_16_9']
+const SEEDREAM_SIZES = ['1K', '1.5K', '2K']
 
 /**
  * protocol 取值:
  *  - 'openai-images' : /v1/images/generations 与 /v1/images/edits（同步, Bearer）
  *  - 'chat'          : /v1/chat/completions（同步, Bearer, 图片位于 message.images）
  *  - 'fal'           : /queue/... 异步队列（Bearer / Key）
+ *  - 'volcengine'    : /volcengine/v3/images/generations（同步, Bearer, 同接口支持参考图编辑）
  */
 export const MODELS = [
   {
@@ -139,6 +142,28 @@ export const MODELS = [
     note: '轻量快速的 Gemini 3.1 图片模型（单张输出）',
   },
   {
+    id: 'bytedance/doubao-seedream-5.0-pro',
+    name: 'Doubao-Seedream-5.0-Pro',
+    provider: 'ByteDance',
+    protocols: ['volcengine'],
+    defaultProtocol: 'volcengine',
+    kinds: {
+      volcengine: { sizes: SEEDREAM_SIZES, defaultSize: '2K', maxRefs: 10, watermark: true, seed: true },
+    },
+    note: '豆包 Seedream 5.0 Pro（火山协议），支持参考图编辑与图层控制',
+  },
+  {
+    id: 'bytedance/doubao-seedream-5.0-flash',
+    name: 'Doubao-Seedream-5.0-Flash',
+    provider: 'ByteDance',
+    protocols: ['volcengine'],
+    defaultProtocol: 'volcengine',
+    kinds: {
+      volcengine: { sizes: SEEDREAM_SIZES, defaultSize: '2K', maxRefs: 10, watermark: true, seed: true },
+    },
+    note: '豆包 Seedream 5.0 Flash（火山协议），速度优先，支持参考图编辑',
+  },
+  {
     id: 'kling-image-o1',
     name: 'Kling-Image-O1',
     provider: 'Kling',
@@ -162,5 +187,5 @@ export function getModel(id) {
 }
 
 export function protocolLabel(p) {
-  return { 'openai-images': 'OpenAI', chat: 'Chat', fal: 'FAL 异步' }[p] || p
+  return { 'openai-images': 'OpenAI', chat: 'Chat', fal: 'FAL 异步', volcengine: '火山协议' }[p] || p
 }

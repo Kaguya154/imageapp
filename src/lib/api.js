@@ -208,11 +208,26 @@ async function fetchAsDataUrl(url, signal) {
   }
 }
 
+/* ---------------- 火山协议（Seedream, 同步） ---------------- */
+
+export async function generateWithVolcengine({ settings, apiKey, model, prompt, params, refImages, signal }) {
+  const base = baseUrlOf(settings)
+  const payload = { model, prompt, response_format: 'b64_json', ...params }
+  if (refImages.length > 0) payload.image = refImages.map((r) => r.dataUrl)
+  const data = await postJson(`${base}/volcengine/v3/images/generations`, apiKey, payload, signal)
+  const images = (data?.data || [])
+    .map((d) => toDataUrl(d.b64_json || d.url, d.output_format || data?.data?.[0]?.output_format || 'jpeg'))
+    .filter(Boolean)
+  if (!images.length) throw new ApiError('接口未返回图片', 200, data)
+  return images
+}
+
 /* ---------------- 统一入口 ---------------- */
 
 export function generate(opts) {
   const { protocol } = opts
   if (protocol === 'fal') return generateWithFal(opts)
   if (protocol === 'chat') return generateWithChat(opts)
+  if (protocol === 'volcengine') return generateWithVolcengine(opts)
   return generateWithOpenAIImages(opts)
 }
